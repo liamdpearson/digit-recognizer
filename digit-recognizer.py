@@ -3,14 +3,16 @@ import arcade
 import arcade.gui
 import numpy as np # linear algebra
 
-SCREEN_WIDTH, SCREEN_HEIGHT = 1000, 1000
+sw, sh = arcade.window_commands.get_display_size()
+
+SCREEN_WIDTH, SCREEN_HEIGHT = 3*sh//4, 3*sh//4
 
 
 class Draw(arcade.Window):
     """ digit neural net draw test """
     def __init__(self):
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, "Digit Recognizer", fullscreen=False)
-        self.set_location(50,50)
+        self.set_location(sw//2 - 3*sh//8,sh//8)
         arcade.set_background_color(arcade.color.GRAY)
 
         self.left_pressed = False
@@ -26,18 +28,18 @@ class Draw(arcade.Window):
 
 
         #-- init gui --#
-        self.button_style = {"font_name" : "Kenney Pixel", "font_size" : 40}
+        self.button_style = {"font_name" : "Kenney Pixel", "font_size" : SCREEN_WIDTH*.040}
 
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
 
         self.h_box = arcade.gui.UIBoxLayout(vertical=False)
 
-        self.guess_button = arcade.gui.UIFlatButton(text="Guess", width=250, height=75, style=self.button_style)
-        self.h_box.add(self.guess_button.with_space_around(right=20))
+        self.guess_button = arcade.gui.UIFlatButton(text="Guess", width=SCREEN_WIDTH*.250, height=SCREEN_WIDTH*.075, style=self.button_style)
+        self.h_box.add(self.guess_button.with_space_around(right=SCREEN_WIDTH*.020))
 
-        self.clear_button = arcade.gui.UIFlatButton(text="Clear", width=250, height=75, style=self.button_style)
-        self.h_box.add(self.clear_button.with_space_around(right=20))
+        self.clear_button = arcade.gui.UIFlatButton(text="Clear", width=SCREEN_WIDTH*.250, height=SCREEN_WIDTH*.075, style=self.button_style)
+        self.h_box.add(self.clear_button.with_space_around(right=SCREEN_WIDTH*.020))
 
         @self.guess_button.event("on_click")
         def on_click_settings(event):
@@ -53,8 +55,8 @@ class Draw(arcade.Window):
             arcade.gui.UIAnchorWidget(
                 anchor_x="center_x",
                 anchor_y="center_y",
-                align_y = -425,
-                align_x = -130,
+                align_y = -SCREEN_HEIGHT*.425,
+                align_x = -SCREEN_WIDTH*.130,
                 child=self.h_box)
         )
 
@@ -62,29 +64,29 @@ class Draw(arcade.Window):
     def on_draw(self):
         arcade.start_render()
 
-        arcade.draw_text("Draw a digit", 355, 
-                             900, arcade.color.WHITE,
-                             50, anchor_x="center", font_name="Kenney Mini Square")
+        arcade.draw_text("Draw a digit", SCREEN_WIDTH*.355, 
+                             SCREEN_HEIGHT*.9, arcade.color.WHITE,
+                             SCREEN_WIDTH*.050, anchor_x="center", font_name="Kenney Mini Square")
 
-        arcade.draw_rectangle_filled(360, 500, 700, 700, arcade.color.BLACK)
+        arcade.draw_rectangle_filled(SCREEN_WIDTH*.36, SCREEN_HEIGHT*.5, SCREEN_WIDTH*0.7, SCREEN_HEIGHT*0.7, arcade.color.BLACK)
 
         for row in range(28):
             for col in range(28):
 
                 mnist_row = 27 - row
                 alpha = self.img[mnist_row*28 + col] * 255
-                arcade.draw_rectangle_filled(col*25 + 22.5, 
-                                             row*25 + 162.5,   25, 25, 
+                arcade.draw_rectangle_filled(col*SCREEN_WIDTH*0.025 + SCREEN_HEIGHT*.0225, 
+                                             row*SCREEN_HEIGHT*0.025 + SCREEN_HEIGHT*.1625,           SCREEN_HEIGHT*0.025, SCREEN_HEIGHT*0.025, 
                                              (255, 255, 255, alpha))
         
-        arcade.draw_rectangle_outline(360, 500, 700, 700, arcade.color.WHITE, 3)
+        arcade.draw_rectangle_outline(SCREEN_WIDTH*.36, SCREEN_HEIGHT*.5, SCREEN_WIDTH*0.7, SCREEN_HEIGHT*0.7, arcade.color.WHITE, 3)
 
-        arcade.draw_text("Prediction: " + str(self.prediction), 850, 
-                             550, arcade.color.WHITE,
-                             20, anchor_x="center", font_name="Kenney Mini Square")
-        arcade.draw_text("Confidence: " + str(self.confidence*100//1) + "%", 850,
-                             450, arcade.color.WHITE,
-                             20, anchor_x="center", font_name="Kenney Mini Square")
+        arcade.draw_text("Prediction: " + str(self.prediction), SCREEN_WIDTH*.85, 
+                             SCREEN_HEIGHT*.55, arcade.color.WHITE,
+                             SCREEN_WIDTH*.02, anchor_x="center", font_name="Kenney Mini Square")
+        arcade.draw_text("Confidence: " + str(self.confidence*100//1) + "%", SCREEN_WIDTH*.85, 
+                             SCREEN_HEIGHT*.45, arcade.color.WHITE,
+                             SCREEN_WIDTH*.02, anchor_x="center", font_name="Kenney Mini Square")
         
         self.manager.draw()
     
@@ -105,23 +107,23 @@ class Draw(arcade.Window):
 
 
     def draw_point(self, x, y):
-        if x >= 0 and x <= 700 and y >= 160 and y <= 860:
-            mnist_row = 27 - ((y-160) * 28 // 700)   # flip y, MNIST row 0 = top
-            mnist_col = x * 28 // 700
+        if x >= SCREEN_WIDTH*0.005 and x <= SCREEN_WIDTH*0.705 and y >= SCREEN_HEIGHT*0.15 and y <= SCREEN_HEIGHT*0.85:
+            mnist_row = int(27 - ((y-SCREEN_HEIGHT*0.15) * 28) // int(SCREEN_WIDTH*0.705))   # flip y, MNIST row 0 = top
+            mnist_col = int((x-SCREEN_WIDTH*0.005) * 28) // int(SCREEN_WIDTH*0.7)
 
-            self.img[mnist_row*28 + mnist_col, 0] += .6
+            self.img[mnist_row*28 + mnist_col, 0] += .75
     
             if mnist_row > 0:
-                self.img[mnist_row*28 + mnist_col - 28, 0] += .3
+                self.img[mnist_row*28 + mnist_col - 28, 0] += .45
 
             if mnist_row < 27:
-                self.img[mnist_row*28 + mnist_col + 28, 0] += .3
+                self.img[mnist_row*28 + mnist_col + 28, 0] += .45
 
             if mnist_col > 0:
-                self.img[mnist_row*28 + mnist_col - 1, 0] += .3
+                self.img[mnist_row*28 + mnist_col - 1, 0] += .45
 
             if mnist_col < 27:
-                self.img[mnist_row*28 + mnist_col + 1, 0] += .3
+                self.img[mnist_row*28 + mnist_col + 1, 0] += .45
 
     
     def test(self, W1, b1, W2, b2):
