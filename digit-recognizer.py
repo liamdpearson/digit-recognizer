@@ -111,19 +111,20 @@ class Draw(arcade.Window):
             mnist_row = int(27 - ((y-SCREEN_HEIGHT*0.15) * 28) // int(SCREEN_WIDTH*0.705))   # flip y, MNIST row 0 = top
             mnist_col = int((x-SCREEN_WIDTH*0.005) * 28) // int(SCREEN_WIDTH*0.7)
 
-            self.img[mnist_row*28 + mnist_col, 0] += .75
+
+            self.img[mnist_row*28 + mnist_col, 0] += (-self.img[mnist_row*28 + mnist_col, 0]+1)*.75
     
             if mnist_row > 0:
-                self.img[mnist_row*28 + mnist_col - 28, 0] += .45
+                self.img[mnist_row*28 + mnist_col - 28, 0] += (-self.img[mnist_row*28 + mnist_col - 28, 0]+1)*.45
 
             if mnist_row < 27:
-                self.img[mnist_row*28 + mnist_col + 28, 0] += .45
+                self.img[mnist_row*28 + mnist_col + 28, 0] += (-self.img[mnist_row*28 + mnist_col + 28, 0]+1)*.45
 
             if mnist_col > 0:
-                self.img[mnist_row*28 + mnist_col - 1, 0] += .45
+                self.img[mnist_row*28 + mnist_col - 1, 0] += (-self.img[mnist_row*28 + mnist_col - 1, 0]+1)*.45
 
             if mnist_col < 27:
-                self.img[mnist_row*28 + mnist_col + 1, 0] += .45
+                self.img[mnist_row*28 + mnist_col + 1, 0] += (-self.img[mnist_row*28 + mnist_col + 1, 0]+1)*.45
 
     
     def test(self, W1, b1, W2, b2):
